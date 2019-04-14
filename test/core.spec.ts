@@ -3,6 +3,7 @@ import Authful from '@lib/index'
 let authful!: Authful
 const secret = 'ffj3493$R#J@$f#$Jo3ofk'
 const plaintext = 'p4$$w@rd'
+const payload = { id: 1 }
 
 beforeEach(() => {
   authful = new Authful({ secret })
@@ -28,7 +29,13 @@ describe('pwd', () => {
 
 describe('token', () => {
   test('create', async () => {
-    const payload = { id: 1 }
     const token = await authful.token.create({ payload })
+    expect(typeof token).toBe('string')
+  })
+
+  test('decode', async () => {
+    const token = await authful.token.create({ payload })
+    const decoded = await authful.token.decode(token)
+    expect(decoded).toMatchObject(payload)
   })
 })

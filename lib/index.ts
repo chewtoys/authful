@@ -36,12 +36,12 @@ export default class Authful {
   }
 
   pwd = {
-    async hash(input: AuthfulPwdHash) {
+    hash: async (input: AuthfulPwdHash) => {
       const { plaintext, salt = 10 } = input
       return await bcrypt.hash(plaintext, salt)
     },
 
-    async check(password: AuthfulPwdCheck) {
+    check: async (password: AuthfulPwdCheck) => {
       const { plaintext, hash } = password
       return await bcrypt.compare(plaintext, hash)
     }
@@ -49,9 +49,13 @@ export default class Authful {
 
   token = {
     create: async (config: AuthfulTokenCreate) => {
-      const { secret, expiresIn = '24hr' } = this
       const { payload } = config
+      const { secret, expiresIn = '24hr' } = this
       return await jwt.sign(payload, secret, { expiresIn })
+    },
+    decode: async (token: string) => {
+      const secret = this.secret as string | Buffer
+      return await jwt.verify(token, secret)
     }
   }
 }
