@@ -20,11 +20,15 @@
   },
   "homepage": "https://github.com/o8e/authful#readme",
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.13.4",
     "jest": "^24.7.1",
     "prettier": "1.17.0",
     "ts-jest": "^24.0.2",
     "typescript": "^3.4.3"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.6"
   }
 }
