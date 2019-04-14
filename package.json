@@ -1,8 +1,8 @@
 {
   "name": "authful",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "version": "1.0.1",
+  "description": "A lightweight authentication library for Node",
+  "main": "dist/index.min.js",
   "scripts": {
     "test": "jest",
     "test:dev": "jest --watch",
@@ -16,8 +16,8 @@
   },
   "types": "dist/index.d.ts",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "o8e <tribe@myself.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/o8e/authful/issues"
   },
