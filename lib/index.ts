@@ -1,5 +1,7 @@
 import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
+import { omit } from 'lodash'
+import dayjs from 'dayjs'
 
 export interface AuthfulOptions {
   secret: jwt.Secret
@@ -16,8 +18,8 @@ export interface AuthfulPwdCheck {
   plaintext: string
 }
 
-export interface AuthfulTokenCreate {
-  payload: string | Buffer | object
+export interface AuthfulTokenData {
+  exp: number
 }
 
 export default class Authful {
@@ -26,7 +28,7 @@ export default class Authful {
 
   constructor(options: AuthfulOptions) {
     this.secret = options.secret
-    this.expiresIn = options.expiresIn
+    this.expiresIn = options.expiresIn || '24hrs'
   }
 
   ready() {
@@ -48,14 +50,40 @@ export default class Authful {
   }
 
   token = {
-    create: async (config: AuthfulTokenCreate) => {
-      const { payload } = config
-      const { secret, expiresIn = '24hr' } = this
+    create: async (payload: string | Buffer | object) => {
+      const { secret, expiresIn } = this
       return await jwt.sign(payload, secret, { expiresIn })
     },
     decode: async (token: string) => {
       const secret = this.secret as string | Buffer
-      return await jwt.verify(token, secret)
+      return (await jwt.verify(token, secret)) as AuthfulTokenData
+    },
+    refresh: async (token: string) => {
+      const { secret, expiresIn } = this
+
+      try {
+        const decoded = (await this.token.decode(token)) as AuthfulTokenData
+        const expired = this.isExpired(decoded.exp)
+
+        if (expired) {
+          tokenExpiredError()
+        }
+
+        const payload = omit(decoded, ['iat', 'exp'])
+        return await this.token.create(payload)
+      } catch (err) {
+        throw err
+      }
     }
   }
+
+  isExpired(unix: number) {
+    return dayjs().diff(unix, 'day') >= 1
+  }
+}
+
+function tokenExpiredError() {
+  return Object.assign(new Error(), {
+    name: 'TokenExpired'
+  })
 }
