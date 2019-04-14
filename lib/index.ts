@@ -1,10 +1,10 @@
-import * as bcrypt from 'bcrypt'
-import * as jwt from 'jsonwebtoken'
+import { hash, compare } from 'bcrypt'
+import { sign, verify, Secret } from 'jsonwebtoken'
 import { omit } from 'lodash'
 import dayjs from 'dayjs'
 
 export interface AuthfulOptions {
-  secret: jwt.Secret
+  secret: Secret
   expiresIn?: string | number
 }
 
@@ -23,7 +23,7 @@ export interface AuthfulTokenData {
 }
 
 export default class Authful {
-  secret: jwt.Secret
+  secret: Secret
   expiresIn?: string | number
 
   constructor(options: AuthfulOptions) {
@@ -40,23 +40,23 @@ export default class Authful {
   pwd = {
     hash: async (input: AuthfulPwdHash) => {
       const { plaintext, salt = 10 } = input
-      return await bcrypt.hash(plaintext, salt)
+      return await hash(plaintext, salt)
     },
 
     check: async (password: AuthfulPwdCheck) => {
       const { plaintext, hash } = password
-      return await bcrypt.compare(plaintext, hash)
+      return await compare(plaintext, hash)
     }
   }
 
   token = {
     create: async (payload: string | Buffer | object) => {
       const { secret, expiresIn } = this
-      return await jwt.sign(payload, secret, { expiresIn })
+      return await sign(payload, secret, { expiresIn })
     },
     decode: async (token: string) => {
       const secret = this.secret as string | Buffer
-      return (await jwt.verify(token, secret)) as AuthfulTokenData
+      return (await verify(token, secret)) as AuthfulTokenData
     },
     refresh: async (token: string) => {
       const { secret, expiresIn } = this

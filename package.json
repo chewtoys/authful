@@ -5,7 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch",
+    "shrink": "uglifyjs --compress --mangle --output ./dist/index.min.js -- ./dist/index.js",
+    "build": "tsc && npm run shrink",
+    "prepublish": "npm test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -28,7 +31,8 @@
     "jest": "^24.7.1",
     "prettier": "1.17.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.3",
+    "uglify-js": "^3.5.4"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
