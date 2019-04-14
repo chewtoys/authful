@@ -1,0 +1,3 @@
+(async () => {
+  return 'Hello, world!'
+})
